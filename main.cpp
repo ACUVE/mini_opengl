@@ -310,6 +310,7 @@ struct window_data
 	glm::mat4 proj, view, model;
 	bool draged{ false };
 	float xpos, ypos;
+	GLuint program;
 };
 
 void window_framebuffer_size_callback( GLFWwindow *window, int width, int height )
@@ -345,6 +346,24 @@ void window_mouse_button_callback( GLFWwindow *window, int button, int action, i
 	    case GLFW_RELEASE: data->draged = false; break;
 	    }
 	    break;
+	}
+}
+void window_key_callback( GLFWwindow *window, int key, int scancode, int action, int mods )
+{
+	auto data = static_cast< window_data * >( glfwGetWindowUserPointer( window ) );
+	if( !data ) return;
+	switch( key )
+	{
+	case GLFW_KEY_R:
+	    glfwMakeContextCurrent( window );
+		try
+		{
+			auto const vs = readallfile( "vertexshader.txt" );
+			auto const fs = readallfile( "fragmentshader.txt" );
+			data->program = opengl::compile_shader( vs.c_str(), fs.c_str() );
+		}
+		catch( ... )
+		{}
 	}
 }
 
@@ -397,14 +416,14 @@ try
 	glfwSetFramebufferSizeCallback( main_window, window_framebuffer_size_callback );
 	glfwSetCursorPosCallback( main_window, window_cursor_pos_callback );
 	glfwSetMouseButtonCallback( main_window, window_mouse_button_callback );
+	glfwSetKeyCallback( main_window, window_key_callback );
 	
-	GLuint program = 0;
 	{
 		try
 		{
 			auto const vs = readallfile( "vertexshader.txt" );
 			auto const fs = readallfile( "fragmentshader.txt" );
-			program = opengl::compile_shader( vs.c_str(), fs.c_str() );
+			main_window_data.program = opengl::compile_shader( vs.c_str(), fs.c_str() );
 		}
 		catch( ... )
 		{}
@@ -418,10 +437,10 @@ try
 		glm::mat4 const mvp = main_window_data.proj * main_window_data.view * model;
 		glm::mat3 const Rmat( model );
 		
-		glUseProgram( program );
-		glUniformMatrix4fv( glGetUniformLocation( program, "Hmat" ), 1, GL_FALSE, &mvp[ 0 ][ 0 ] );
-		glUniformMatrix3fv( glGetUniformLocation( program, "Rmat" ), 1, GL_FALSE, &Rmat[ 0 ][ 0 ] );
-		glUniform3f( glGetUniformLocation( program, "Lvec" ), 0.577f, 0.577f, 0.577f );
+		glUseProgram( main_window_data.program );
+		glUniformMatrix4fv( glGetUniformLocation( main_window_data.program, "Hmat" ), 1, GL_FALSE, &mvp[ 0 ][ 0 ] );
+		glUniformMatrix3fv( glGetUniformLocation( main_window_data.program, "Rmat" ), 1, GL_FALSE, &Rmat[ 0 ][ 0 ] );
+		glUniform3f( glGetUniformLocation( main_window_data.program, "Lvec" ), 0.577f, 0.577f, 0.577f );
 		
 		glEnableClientState( GL_VERTEX_ARRAY );
 		
