@@ -1,0 +1,18 @@
+#version 330 core
+
+in vec3 tmp_normal;
+in vec3 tmp_position;
+uniform vec3 Lvec;
+
+void main( void )
+{
+	// float v = -dot( tmp_normal, vec3( 0.577, 0.577, -0.577 ) );
+	vec3 pos_normalize = normalize( tmp_position );
+	vec3 reflect = Lvec - 2 * dot( Lvec, tmp_normal ) * tmp_normal;
+	float reflect_tmp = clamp( dot( reflect, -pos_normalize ), 0.0, 1.0 );
+	float defuse_tmp = clamp( -dot( tmp_normal, Lvec ), 0.0, 1.0 );
+	float v = defuse_tmp / 2 + reflect_tmp * reflect_tmp;
+	gl_FragColor = vec4( v, v, v, 1.0 );
+	// color = vec4( 1.0, 1.0, 1.0, 1.0 );
+	// color = texture( tex1, outuv );
+}

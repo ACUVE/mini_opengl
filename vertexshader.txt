@@ -1,0 +1,16 @@
+#version 330 core
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
+uniform mat4 Hmat;
+uniform mat3 Rmat;
+out vec3 tmp_normal;
+out vec3 tmp_position;
+
+void main( void )
+{
+	gl_Position = Hmat * vec4( position.xyz, 1.0 );
+	tmp_position = gl_Position.xyz;
+	tmp_normal = Rmat * normal;
+}
+
