@@ -209,6 +209,7 @@ namespace opengl
 	{
 		GLint result, log_length;
 		std::vector< char > log_buff;
+		bool fail = false;
 
 		GLuint vertex_shader = glCreateShader( GL_VERTEX_SHADER );
 		char const *pvss = vertex_shader_src;
@@ -217,6 +218,7 @@ namespace opengl
 		glGetShaderiv( vertex_shader, GL_COMPILE_STATUS, &result );
 		if( result == GL_FALSE )
 		{
+			fail = true;
 			glGetShaderiv( vertex_shader, GL_INFO_LOG_LENGTH, &log_length );
 			if( log_length > 0 )
 			{
@@ -234,6 +236,7 @@ namespace opengl
 		glGetShaderiv( fragment_shader, GL_COMPILE_STATUS, &result );
 		if( result == GL_FALSE )
 		{
+			fail = true;
 			glGetShaderiv( fragment_shader, GL_INFO_LOG_LENGTH, &log_length );
 			if( log_length > 0 )
 			{
@@ -243,6 +246,13 @@ namespace opengl
 				std::clog << &log_buff[ 0 ] << std::endl;
 			}
 		}
+		
+		if( fail )
+		{
+			glDeleteShader( vertex_shader );
+			glDeleteShader( fragment_shader );
+			return 0;
+		}
 
 		GLuint program = glCreateProgram();
 		glAttachShader( program, vertex_shader );
@@ -251,6 +261,7 @@ namespace opengl
 		glGetProgramiv( program, GL_LINK_STATUS, &result );
 		if( result == GL_FALSE )
 		{
+			fail = true;
 			glGetProgramiv( program, GL_INFO_LOG_LENGTH, &log_length );
 			if( log_length > 0 )
 			{
@@ -263,6 +274,11 @@ namespace opengl
 		glDeleteShader( vertex_shader );
 		glDeleteShader( fragment_shader );
 
+		if( fail )
+		{
+			glDeleteShader( program );
+			return 0;
+		}
 		return program;
 	}
 	template< typename T, typename Alloc >
@@ -360,7 +376,7 @@ void window_key_callback( GLFWwindow *window, int key, int scancode, int action,
 		{
 			auto const vs = readallfile( "vertexshader.txt" );
 			auto const fs = readallfile( "fragmentshader.txt" );
-			data->program = opengl::compile_shader( vs.c_str(), fs.c_str() );
+			if( auto p = opengl::compile_shader( vs.c_str(), fs.c_str() ) ) data->program = p;
 		}
 		catch( ... )
 		{}
