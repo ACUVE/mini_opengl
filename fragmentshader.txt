@@ -7,8 +7,9 @@ uniform vec3 Lvec;
 void main( void )
 {
 	vec3 pos_normalize = normalize( tmp_position );
-	float reflect_tmp = clamp( dot( reflect( Lvec, tmp_normal ), -pos_normalize ), 0.0, 1.0 );
-	float defuse_tmp = clamp( -dot( tmp_normal, Lvec ), 0.0, 1.0 );
-	float v = defuse_tmp / 2 + reflect_tmp * reflect_tmp;
+	float reflect_tmp = max( dot( reflect( Lvec, tmp_normal ), -pos_normalize ), 0.0 );
+	float defuse_tmp = max( -dot( tmp_normal, Lvec ), 0.0 );
+	float v = defuse_tmp / 2 + reflect_tmp * reflect_tmp + 0.1;
+	v = floor( v * 5 ) / 5;
 	gl_FragColor = vec4( v, v, v, 1.0 );
 }
