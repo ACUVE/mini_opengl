@@ -328,9 +328,9 @@ void window_cursor_pos_callback( GLFWwindow *window, double _xpos, double _ypos 
 	auto xpos = static_cast< float >( _xpos ), ypos = static_cast< float >( _ypos );
 	if( data->draged )
 	{
-	    auto const dx = (data->xpos - xpos) / 100.0f, dy = (data->ypos - ypos) / 100.0f;
-	    auto const h = std::hypot( dx, dy );
-	    data->model = glm::rotate( h, glm::vec3( -dy, dx, 0.0f ) ) * data->model;
+		auto const dx = (data->xpos - xpos) / 100.0f, dy = (data->ypos - ypos) / 100.0f;
+		auto const h = std::hypot( dx, dy );
+		data->model = glm::rotate( h, glm::vec3( -dy, dx, 0.0f ) ) * data->model;
 	}
 	data->xpos = xpos; data->ypos = ypos;
 }
@@ -341,11 +341,11 @@ void window_mouse_button_callback( GLFWwindow *window, int button, int action, i
 	switch( button )
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
-	    switch( action ){
-	    case GLFW_PRESS: data->draged = true; break;
-	    case GLFW_RELEASE: data->draged = false; break;
-	    }
-	    break;
+		switch( action ){
+		case GLFW_PRESS: data->draged = true; break;
+		case GLFW_RELEASE: data->draged = false; break;
+		}
+		break;
 	}
 }
 void window_key_callback( GLFWwindow *window, int key, int scancode, int action, int mods )
@@ -355,7 +355,7 @@ void window_key_callback( GLFWwindow *window, int key, int scancode, int action,
 	switch( key )
 	{
 	case GLFW_KEY_R:
-	    glfwMakeContextCurrent( window );
+		glfwMakeContextCurrent( window );
 		try
 		{
 			auto const vs = readallfile( "vertexshader.txt" );
