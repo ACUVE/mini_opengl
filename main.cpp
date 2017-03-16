@@ -371,15 +371,19 @@ void window_key_callback( GLFWwindow *window, int key, int scancode, int action,
 	switch( key )
 	{
 	case GLFW_KEY_R:
-		glfwMakeContextCurrent( window );
-		try
+		if( action == GLFW_PRESS )
 		{
-			auto const vs = readallfile( "vertexshader.txt" );
-			auto const fs = readallfile( "fragmentshader.txt" );
-			if( auto p = opengl::compile_shader( vs.c_str(), fs.c_str() ) ) data->program = p;
+			glfwMakeContextCurrent( window );
+			try
+			{
+				auto const vs = readallfile( "vertexshader.txt" );
+				auto const fs = readallfile( "fragmentshader.txt" );
+				if( auto p = opengl::compile_shader( vs.c_str(), fs.c_str() ) ) data->program = p;
+			}
+			catch( ... )
+			{}
 		}
-		catch( ... )
-		{}
+		break;
 	}
 }
 
